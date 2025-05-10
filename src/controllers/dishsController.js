@@ -3,7 +3,7 @@ const AppError = require("../utils/AppError");
 
 class DishsController {
   async create(request, response) {
-    const { name, ingredients, price, description } = request.body;
+    const { name, ingredients, price, description, categoria } = request.body;
     const user_id = request.user.id;
 
     if (!name || !ingredients || !price || !description) {
@@ -15,6 +15,7 @@ class DishsController {
       price,
       description,
       user_id,
+      categoria
     }); /*aqui ele sempre retorna o elemento que é autoincrmente */
 
     const insertIngredients = ingredients.map((name) => {
@@ -26,7 +27,7 @@ class DishsController {
 
     await knex("ingredients").insert(insertIngredients);
 
-    return response.json({ name, ingredients, price, description });
+    return response.json({ id: dish_Id,  name, ingredients, price, description });
   }
   async delete(request, response) {
     const { id } = request.params;
@@ -36,13 +37,13 @@ class DishsController {
     return response.json({});
   }
   async update(request, response) {
-    const { name, ingredients, price, description } = request.body;
+    const { name, ingredients, price, description, categoria } = request.body;
     const user_id = request.user.id;
     const { id } = request.params;
 
     await knex("dishs")
       .where({ id })
-      .update({ name, price, description, user_id });
+      .update({ name, price, description, user_id, categoria });
 
     const ingredientsInsert = ingredients.map((name) => {
       return {
@@ -70,6 +71,7 @@ class DishsController {
           "dishs.name",
           "dishs.description",
           "dishs.price",
+          "dishs.description"
           
         ])
         .innerJoin("ingredients", "ingredients.dish_Id","dishs.id")
